@@ -1,0 +1,46 @@
+## referecned from algorithm given in lab11 on canvas
+input_file = "lab11_test_dijkstra.txt"
+def readFileToList(input_file):
+    file,temp = open(input_file,"r"),[]
+    for lineNum,line in enumerate(file):
+        if lineNum >=0 :
+            line = line.strip("\n").split(sep = ' ')
+            temp.append(((int(line[0]),int(line[1])),int(line[2])))
+    return temp      
+class GraphNode():
+    def __init__(self,graphNodeId):
+        self.ID = graphNodeId
+        self.visited = False
+        self.distance = 0
+        self.neighbours = []
+        self.weights = []
+    def addNeighbour(self,graphNodeId):self.neighbours.append(graphNodeId)
+    def getNeighbours(self):return self.neighbours
+    def addWeight(self,weight):self.weights.append(weight)      
+def buildGraph(file_input_list):
+    graph = {}
+    for i in range(0,50):graph[i] = GraphNode(i)
+    for neighbor,weight in file_input_list:
+        graph[neighbor[0]].addNeighbour(neighbor[1])
+        graph[neighbor[0]].addWeight(weight)
+    return graph
+def dijkstra(s,graph,t):
+    for node_id in graph:
+        if node_id == s:graph[node_id].distance = 0
+        else:graph[node_id].distance = float('inf')
+    prioityQueue = graph.copy() 
+    while len(prioityQueue) > 0:
+        node_id = min(prioityQueue, key = lambda i:  prioityQueue[i].distance) 
+        del prioityQueue[node_id]
+        for childNodeID,weight in zip(graph[node_id].neighbours,graph[node_id].weights):
+            parent = graph[node_id]
+            child = graph[childNodeID]
+            if child.distance > (parent.distance + weight): child.distance = parent.distance + weight
+    return graph[t].distance          
+##driver code
+file_input_list,graph = readFileToList(input_file),{}
+for i in range(0,50):graph[i] = GraphNode(i)
+for neighbor,weight in file_input_list:
+  graph[neighbor[0]].addNeighbour(neighbor[1])
+  graph[neighbor[0]].addWeight(weight)
+for i in range(11):print("30 to",i,dijkstra(30, graph, i))
